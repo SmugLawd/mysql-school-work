@@ -1,0 +1,42 @@
+from time import sleep
+import mysql.connector
+import pyfirmata
+import datetime
+
+if __name__=='__main__':
+    board = pyfirmata.Arduino('COM4')
+    
+    it = pyfirmata.util.Iterator(board)
+    it.start()
+    
+    print("Arduino connection established..")
+
+    pot = board.get_pin('a:0:i')
+
+    pot.mode = pyfirmata.INPUT
+
+while True:
+    aValue = pot.read()
+    sleep(1)
+    mydb = mysql.connector.connect(    
+        host="localhost",
+        user="root",
+        password="xxxxxx",
+        database="bruh moment"
+    )
+
+    mycursor = mydb.cursor()
+
+    print("mysql connection established..")
+
+    sql = "INSERT INTO dahomey(value,time) VALUES (%s,%s)"
+
+    value = aValue 
+    time =datetime.datetime.now()
+
+    val = (value,time)
+
+    mycursor.execute(sql,val)
+    mydb.commit()
+    print(value)
+    print("finished")
